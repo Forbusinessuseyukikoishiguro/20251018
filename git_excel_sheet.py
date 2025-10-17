@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git チートシート - Excelコピペ用</title>
+    <style>
+        body {
+            font-family: "Yu Gothic", "Meiryo", sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .sheet-container {
+            background: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+            background: white;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #2980b9;
+        }
+        td {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        tr:hover {
+            background: #e8f4f8;
+        }
+        .frequency-high { color: #e74c3c; font-weight: bold; }
+        .frequency-mid { color: #f39c12; }
+        .frequency-low { color: #95a5a6; }
+        .danger-high { background: #ffebee; }
+        .danger-mid { background: #fff3e0; }
+        .danger-low { background: #e8f5e9; }
+        .category {
+            background: #ecf0f1;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .note {
+            background: #fff9c4;
+            padding: 15px;
+            border-left: 4px solid #fbc02d;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Consolas", monospace;
+            color: #c7254e;
+        }
+        .instruction {
+            background: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196f3;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="instruction">
+    <strong>📋 使い方:</strong> 下の表を選択して <code>Ctrl+C</code> でコピー → Excelに <code>Ctrl+V</code> で貼り付け！
+</div>
+
+<!-- シート1: 基本コマンド -->
+<div class="sheet-container">
+    <h2>📌 1. 基本コマンド</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>カテゴリ</th>
+                <th>コマンド</th>
+                <th>説明</th>
+                <th>使用頻度</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="category">初期設定</td>
+                <td><code>git config --global user.name "名前"</code></td>
+                <td>ユーザー名を設定</td>
+                <td class="frequency-low">初回のみ</td>
+            </tr>
+            <tr>
+                <td class="category">初期設定</td>
+                <td><code>git config --global user.email "メール"</code></td>
+                <td>メールアドレスを設定</td>
+                <td class="frequency-low">初回のみ</td>
+            </tr>
+            <tr>
+                <td class="category">初期設定</td>
+                <td><code>git config --global core.editor "code --wait"</code></td>
+                <td>VSCodeをデフォルトエディタに</td>
+                <td class="frequency-low">初回のみ</td>
+            </tr>
+            <tr>
+                <td class="category">リポジトリ</td>
+                <td><code>git init</code></td>
+                <td>新しいリポジトリを作成</td>
+                <td class="frequency-low">低</td>
+            </tr>
+            <tr>
+                <td class="category">リポジトリ</td>
+                <td><code>git clone &lt;URL&gt;</code></td>
+                <td>既存リポジトリを取得</td>
+                <td class="frequency-mid">中</td>
+            </tr>
+            <tr>
+                <td class="category">状態確認</td>
+                <td><code>git status</code></td>
+                <td>変更状態を確認</td>
+                <td class="frequency-high">高</td>
+            </tr>
+            <tr>
+                <td class="category">状態確認</td>
+                <td><code>git diff</code></td>
+                <td>差分を確認</td>
+                <td class="frequency-mid">中</td>
+            </tr>
+            <tr>
+                <td class="category">ステージング</td>
+                <td><code>git add .</code></td>
+                <td>全ファイルをステージング</td>
+                <td class="frequency-high">高</td>
+            </tr>
+            <tr>
+                <td class="category">コミット</td>
+                <td><code>git commit -m "メッセージ"</code></td>
+                <td>コミットを作成</td>
+                <td class="frequency-high">高</td>
+            </tr>
+            <tr>
+                <td class="category">リモート操作</td>
+                <td><code>git push origin main</code></td>
+                <td>リモートへプッシュ</td>
+                <td class="frequency-high">高</td>
+            </tr>
+            <tr>
+                <td class="category">リモート操作</td>
+                <td><code>git pull origin main</code></td>
+                <td>リモートから取得＆マージ</td>
+                <td class="frequency-high">高</td>
+            </tr>
+            <tr>
+                <td class="category">リモート操作</td>
+                <td><code>git fetch</code></td>
+                <td>リモートから取得のみ</td>
+                <td class="frequency-mid">中</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- シート2: ブランチ操作 -->
+<div class="sheet-container">
+    <h2>🌿 2. ブランチ操作</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>コマンド</th>
+                <th>説明</th>
+                <th>使用タイミング</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>git branch</code></td>
+                <td>ブランチ一覧を表示</td>
+                <td>確認時</td>
+            </tr>
+            <tr>
+                <td><code>git switch -c feature_x</code></td>
+                <td>新しいブランチを作成して切り替え</td>
+                <td>新機能開発開始時</td>
+            </tr>
+            <tr>
+                <td><code>git switch main</code></td>
+                <td>mainブランチに切り替え</td>
+                <td>作業完了後</td>
+            </tr>
+            <tr>
+                <td><code>git merge feature_x</code></td>
+                <td>feature_xをマージ</td>
+                <td>PR承認後</td>
+            </tr>
+            <tr>
+                <td><code>git branch -d feature_x</code></td>
+                <td>ブランチを削除</td>
+                <td>マージ完了後</td>
+            </tr>
+            <tr>
+                <td><code>git rebase main</code></td>
+                <td>ベースを整理（上級者向け）</td>
+                <td>履歴整理時</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- シート3: トラブル対応 -->
+<div class="sheet-container">
+    <h2>🛠️ 3. トラブル対応</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>問題</th>
+                <th>解決コマンド</th>
+                <th>危険度</th>
+                <th>注意点</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="danger-low">
+                <td>コミットメッセージを間違えた</td>
+                <td><code>git commit --amend -m "正しいメッセージ"</code></td>
+                <td>低</td>
+                <td>push前のみ使用可能</td>
+            </tr>
+            <tr class="danger-low">
+                <td>間違ったファイルをコミット</td>
+                <td><code>git reset --soft HEAD~1</code></td>
+                <td>低</td>
+                <td>ステージに戻るだけ</td>
+            </tr>
+            <tr class="danger-mid">
+                <td>ファイルを削除してしまった</td>
+                <td><code>git checkout -- &lt;ファイル名&gt;</code></td>
+                <td>中</td>
+                <td>最新コミット時点に戻る</td>
+            </tr>
+            <tr class="danger-high">
+                <td>コミットを取り消したい（push前）</td>
+                <td><code>git reset --hard HEAD~1</code></td>
+                <td>高</td>
+                <td>履歴が消えるので慎重に</td>
+            </tr>
+            <tr class="danger-low">
+                <td>コミットを取り消したい（push後）</td>
+                <td><code>git revert &lt;コミットID&gt;</code></td>
+                <td>低</td>
+                <td>新しい取り消しコミットを作成</td>
+            </tr>
+            <tr class="danger-high">
+                <td>ローカルをリモートに合わせたい</td>
+                <td><code>git fetch --all && git reset --hard origin/main</code></td>
+                <td>高</td>
+                <td>ローカルの変更は全消去</td>
+            </tr>
+            <tr class="danger-low">
+                <td>作業を一時退避したい</td>
+                <td><code>git stash</code></td>
+                <td>低</td>
+                <td>stash popで復元を忘れずに</td>
+            </tr>
+            <tr class="danger-mid">
+                <td>競合が発生した</td>
+                <td><code>VSCodeで差分を解決後 git add . && git commit</code></td>
+                <td>中</td>
+                <td>Accept Current/Incoming選択</td>
+            </tr>
+            <tr class="danger-low">
+                <td>消えたコミットを探したい</td>
+                <td><code>git reflog</code></td>
+                <td>低</td>
+                <td>消えた履歴も見つかる可能性あり</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- シート4: チーム開発フロー -->
+<div class="sheet-container">
+    <h2>👥 4. チーム開発フロー</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ステップ</th>
+                <th>コマンド</th>
+                <th>説明</th>
+                <th>必須度</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><code>git pull origin main</code></td>
+                <td>最新のコードを取得</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><code>git switch -c feature/機能名</code></td>
+                <td>作業用ブランチを作成</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>コード編集</td>
+                <td>実際の開発作業</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><code>git add .</code></td>
+                <td>変更をステージング</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><code>git commit -m "機能追加"</code></td>
+                <td>コミットを作成</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><code>git push origin feature/機能名</code></td>
+                <td>リモートに送信</td>
+                <td>★★★</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>GitHub/GitLabでPR作成</td>
+                <td>レビュー依頼</td>
+                <td>★★★</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- シート5: 間違いやすいポイント -->
+<div class="sheet-container">
+    <h2>⚠️ 5. 間違いやすいポイント</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>コマンドA</th>
+                <th>コマンドB</th>
+                <th>Aの説明</th>
+                <th>Bの説明</th>
+                <th>おすすめ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>git add</code></td>
+                <td><code>git commit</code></td>
+                <td>ステージングエリアに追加</td>
+                <td>履歴に永続的に記録</td>
+                <td>両方必須</td>
+            </tr>
+            <tr>
+                <td><code>git pull</code></td>
+                <td><code>git fetch</code></td>
+                <td>取得＆マージを同時実行</td>
+                <td>取得のみ（安全）</td>
+                <td>Bが安全</td>
+            </tr>
+            <tr>
+                <td><code>git reset</code></td>
+                <td><code>git revert</code></td>
+                <td>履歴を書き換える（危険）</td>
+                <td>新しいコミットで取り消し（安全）</td>
+                <td>Bが推奨</td>
+            </tr>
+            <tr>
+                <td><code>git checkout</code></td>
+                <td><code>git switch</code></td>
+                <td>古い書き方（多機能）</td>
+                <td>新しい書き方（ブランチ移動専用）</td>
+                <td>Bが推奨</td>
+            </tr>
+            <tr>
+                <td><code>git stash</code></td>
+                <td><code>git commit</code></td>
+                <td>一時退避（履歴に残らない）</td>
+                <td>永続的に保存</td>
+                <td>用途次第</td>
+            </tr>
+            <tr>
+                <td><code>fast-forward</code></td>
+                <td><code>merge commit</code></td>
+                <td>直線的な履歴</td>
+                <td>統合コミットを作成</td>
+                <td>チーム次第</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- シート6: stash操作 -->
+<div class="sheet-container">
+    <h2>💾 6. stash操作</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>コマンド</th>
+                <th>説明</th>
+                <th>使用場面</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>git stash</code></td>
+                <td>現在の変更を一時退避</td>
+                <td>pull前やブランチ切替前</td>
+            </tr>
+            <tr>
+                <td><code>git stash list</code></td>
+                <td>退避した内容の一覧</td>
+                <td>stashの確認</td>
+            </tr>
+            <tr>
+                <td><code>git stash show -p</code></td>
+                <td>退避内容の詳細表示</td>
+                <td>中身の確認</td>
+            </tr>
+            <tr>
+                <td><code>git stash pop</code></td>
+                <td>最新のstashを復元＆削除</td>
+                <td>作業再開</td>
+            </tr>
+            <tr>
+                <td><code>git stash apply</code></td>
+                <td>最新のstashを復元（残す）</td>
+                <td>複数箇所で使いたい時</td>
+            </tr>
+            <tr>
+                <td><code>git stash drop stash@{0}</code></td>
+                <td>指定したstashを削除</td>
+                <td>不要なstash削除</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="note">
+    <strong>💡 ヒント:</strong> 各表を個別に選択してコピペすることで、Excelの複数シートに分けて貼り付けることもできます！
+</div>
+
+</body>
+</html>
