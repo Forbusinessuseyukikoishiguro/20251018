@@ -1,0 +1,9 @@
+シーン	操作／発言例	使用ツール
+出勤時	「おはようございます☀ 本日もよろしくお願いします」	Slack
+昼休憩	「昼休憩に入ります🍱」／「戻りました」	Slack
+残業時	「〇〇対応のため30分ほど残業します」	Slack＋勤怠システム
+Gitブランチ作成	git checkout -b feature/issue123_add-login	ターミナル
+コミット	git commit -m "feat: add login screen UI"	Git
+プッシュ	git push origin feature/issue123_add-login	Git
+レビュー依頼	「@reviewer さん、#123 のレビューお願いします🙏」	Slack
+会議参加	「おはようございます、本日は〇〇の進捗共有です」	Slack Call / Google Meet
