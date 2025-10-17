@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SESエンジニア向けタスク管理TODO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .stats {
+            padding: 20px 30px;
+            background: #f0f4f8;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #f3f4f6;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .priority-high {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-未着手 {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+
+        .status-進行中 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-レビュー待ち {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-完了 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .tech-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .tech-テック {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+
+        .tech-非テック {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+
+        .delete-btn {
+            background: #fee;
+            color: #dc2626;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: #fcc;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .controls, .btn, .delete-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 SESエンジニア向けタスク管理TODO</h1>
+            <p>効率的なタスク管理で生産性向上</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="openAddModal()">➕ 新規タスク追加</button>
+            <button class="btn btn-success" onclick="exportToExcel()">📊 Excel出力</button>
+            <button class="btn btn-danger" onclick="clearAllTasks()">🗑️ 全削除</button>
+            
+            <div class="filter-group">
+                <select id="filterStatus" onchange="filterTasks()">
+                    <option value="">全ステータス</option>
+                    <option value="未着手">未着手</option>
+                    <option value="進行中">進行中</option>
+                    <option value="レビュー待ち">レビュー待ち</option>
+                    <option value="完了">完了</option>
+                </select>
+                
+                <select id="filterPriority" onchange="filterTasks()">
+                    <option value="">全緊急度</option>
+                    <option value="高">高</option>
+                    <option value="中">中</option>
+                    <option value="低">低</option>
+                </select>
+
+                <select id="filterType" onchange="filterTasks()">
+                    <option value="">全タイプ</option>
+                    <option value="テック">テック</option>
+                    <option value="非テック">非テック</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>総タスク数</h3>
+                <p id="totalTasks">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>未着手</h3>
+                <p id="notStarted">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>進行中</h3>
+                <p id="inProgress">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>完了</h3>
+                <p id="completed">0</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th style="width: 100px;">ステータス</th>
+                        <th style="width: 200px;">タスク名</th>
+                        <th style="width: 60px;">緊急度</th>
+                        <th style="width: 80px;">タイプ</th>
+                        <th style="width: 100px;">依頼者</th>
+                        <th style="width: 150px;">目標開始</th>
+                        <th style="width: 150px;">実際開始</th>
+                        <th style="width: 100px;">開始差異</th>
+                        <th style="width: 150px;">目標終了</th>
+                        <th style="width: 150px;">実際完了</th>
+                        <th style="width: 100px;">完了差異</th>
+                        <th style="width: 100px;">所要時間</th>
+                        <th style="width: 150px;">デッドライン</th>
+                        <th style="width: 100px;">レビュー依頼先</th>
+                        <th style="width: 250px;">指示内容</th>
+                        <th style="width: 250px;">詳細</th>
+                        <th style="width: 80px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- タスク追加/編集モーダル -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">新規タスク追加</div>
+            
+            <div class="form-group">
+                <label>タスク名 *</label>
+                <input type="text" id="taskName" placeholder="例: ログイン機能の実装">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ステータス *</label>
+                    <select id="taskStatus">
+                        <option value="未着手">未着手</option>
+                        <option value="進行中">進行中</option>
+                        <option value="レビュー待ち">レビュー待ち</option>
+                        <option value="完了">完了</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>緊急度 *</label>
+                    <select id="taskPriority">
+                        <option value="中">中</option>
+                        <option value="高">高</option>
+                        <option value="低">低</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>タイプ *</label>
+                    <select id="taskType">
+                        <option value="テック">テック</option>
+                        <option value="非テック">非テック</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>依頼者</label>
+                    <input type="text" id="taskRequester" placeholder="例: 田中PM">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>目標開始日時</label>
+                    <input type="datetime-local" id="taskTargetStart">
+                </div>
+
+                <div class="form-group">
+                    <label>実際開始日時</label>
+                    <input type="datetime-local" id="taskActualStart">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>目標終了日時</label>
+                    <input type="datetime-local" id="taskTargetEnd">
+                </div>
+
+                <div class="form-group">
+                    <label>実際完了日時</label>
+                    <input type="datetime-local" id="taskActualEnd">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>デッドライン</label>
+                    <input type="datetime-local" id="taskDeadline">
+                </div>
+
+                <div class="form-group">
+                    <label>レビュー依頼先</label>
+                    <input type="text" id="taskReviewer" placeholder="例: 佐藤リーダー">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>指示内容</label>
+                <textarea id="taskInstruction" placeholder="どのような指示を受けたか記載"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>詳細</label>
+                <textarea id="taskDetail" placeholder="タスクの詳細、メモ、技術的な注意点など"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveTask()">💾 保存</button>
+                <button class="btn" style="background: #6b7280; color: white;" onclick="closeModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+        let editingTaskId = null;
+
+        // ローカルストレージから読み込み
+        function loadTasks() {
+            const saved = localStorage.getItem('sesTasks');
+            if (saved) {
+                tasks = JSON.parse(saved);
+            }
+            renderTasks();
+            updateStats();
+        }
+
+        // ローカルストレージに保存
+        function saveTasks() {
+            localStorage.setItem('sesTasks', JSON.stringify(tasks));
+        }
+
+        // タスクを描画
+        function renderTasks() {
+            const tbody = document.getElementById('taskTableBody');
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterPriority = document.getElementById('filterPriority').value;
+            const filterType = document.getElementById('filterType').value;
+
+            let filteredTasks = tasks.filter(task => {
+                if (filterStatus && task.status !== filterStatus) return false;
+                if (filterPriority && task.priority !== filterPriority) return false;
+                if (filterType && task.type !== filterType) return false;
+                return true;
+            });
+
+            tbody.innerHTML = filteredTasks.map((task, index) => {
+                const startDiff = calculateTimeDifference(task.targetStart, task.actualStart);
+                const endDiff = calculateTimeDifference(task.targetEnd, task.actualEnd);
+                const workingTime = calculateWorkingTime(task.actualStart, task.actualEnd);
+                
+                return `
+                <tr>
+                    <td>${task.id}</td>
+                    <td><span class="status-badge status-${task.status}">${task.status}</span></td>
+                    <td><strong>${task.name}</strong></td>
+                    <td class="priority-${task.priority === '高' ? 'high' : task.priority === '中' ? 'medium' : 'low'}">${task.priority}</td>
+                    <td><span class="tech-badge tech-${task.type}">${task.type}</span></td>
+                    <td>${task.requester || '-'}</td>
+                    <td>${formatDateTime(task.targetStart)}</td>
+                    <td>${formatDateTime(task.actualStart)}</td>
+                    <td>${formatTimeDiffCell(startDiff)}</td>
+                    <td>${formatDateTime(task.targetEnd)}</td>
+                    <td>${formatDateTime(task.actualEnd)}</td>
+                    <td>${formatTimeDiffCell(endDiff)}</td>
+                    <td>${workingTime}</td>
+                    <td>${formatDateTime(task.deadline)}</td>
+                    <td>${task.reviewer || '-'}</td>
+                    <td style="font-size: 12px;">${task.instruction || '-'}</td>
+                    <td style="font-size: 12px;">${task.detail || '-'}</td>
+                    <td>
+                        <button onclick="editTask(${task.id})" style="background: #e0e7ff; color: #4338ca; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px; font-size: 12px; font-weight: 600;">✏️</button>
+                        <button onclick="deleteTask(${task.id})" class="delete-btn">🗑️</button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        // 日時フォーマット
+        function formatDateTime(datetime) {
+            if (!datetime) return '-';
+            const d = new Date(datetime);
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `${month}/${day} ${hours}:${minutes}`;
+        }
+
+        // 時間差異を計算（分単位）
+        function calculateTimeDifference(targetTime, actualTime) {
+            if (!targetTime || !actualTime) return null;
+            const target = new Date(targetTime);
+            const actual = new Date(actualTime);
+            const diffMs = actual - target;
+            const diffMinutes = Math.round(diffMs / 1000 / 60);
+            return diffMinutes;
+        }
+
+        // 所要時間を計算
+        function calculateWorkingTime(startTime, endTime) {
+            if (!startTime || !endTime) return '-';
+            const start = new Date(startTime);
+            const end = new Date(endTime);
+            const diffMs = end - start;
+            
+            if (diffMs < 0) return '-';
+            
+            const hours = Math.floor(diffMs / 1000 / 60 / 60);
+            const minutes = Math.floor((diffMs / 1000 / 60) % 60);
+            
+            if (hours > 0) {
+                return `${hours}時間${minutes}分`;
+            } else {
+                return `${minutes}分`;
+            }
+        }
+
+        // 時間差異のセル表示フォーマット
+        function formatTimeDiffCell(diffMinutes) {
+            if (diffMinutes === null) return '-';
+            
+            const hours = Math.floor(Math.abs(diffMinutes) / 60);
+            const minutes = Math.abs(diffMinutes) % 60;
+            
+            let text = '';
+            if (hours > 0) {
+                text = `${hours}時間${minutes}分`;
+            } else {
+                text = `${minutes}分`;
+            }
+            
+            if (diffMinutes > 0) {
+                // 遅延
+                return `<span style="color: #dc2626; font-weight: 600;">+${text}</span>`;
+            } else if (diffMinutes < 0) {
+                // 早い
+                return `<span style="color: #10b981; font-weight: 600;">-${text}</span>`;
+            } else {
+                // ぴったり
+                return `<span style="color: #6b7280;">±0</span>`;
+            }
+        }
+
+        // 統計更新
+        function updateStats() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('notStarted').textContent = tasks.filter(t => t.status === '未着手').length;
+            document.getElementById('inProgress').textContent = tasks.filter(t => t.status === '進行中').length;
+            document.getElementById('completed').textContent = tasks.filter(t => t.status === '完了').length;
+        }
+
+        // モーダルを開く
+        function openAddModal() {
+            editingTaskId = null;
+            document.getElementById('modalTitle').textContent = '新規タスク追加';
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskStatus').value = '未着手';
+            document.getElementById('taskPriority').value = '中';
+            document.getElementById('taskType').value = 'テック';
+            document.getElementById('taskRequester').value = '';
+            document.getElementById('taskTargetStart').value = '';
+            document.getElementById('taskActualStart').value = '';
+            document.getElementById('taskTargetEnd').value = '';
+            document.getElementById('taskActualEnd').value = '';
+            document.getElementById('taskDeadline').value = '';
+            document.getElementById('taskReviewer').value = '';
+            document.getElementById('taskInstruction').value = '';
+            document.getElementById('taskDetail').value = '';
+            document.getElementById('taskModal').classList.add('active');
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('taskModal').classList.remove('active');
+        }
+
+        // タスクを保存
+        function saveTask() {
+            const name = document.getElementById('taskName').value.trim();
+            if (!name) {
+                alert('タスク名を入力してください');
+                return;
+            }
+
+            const taskData = {
+                name,
+                status: document.getElementById('taskStatus').value,
+                priority: document.getElementById('taskPriority').value,
+                type: document.getElementById('taskType').value,
+                requester: document.getElementById('taskRequester').value,
+                targetStart: document.getElementById('taskTargetStart').value,
+                actualStart: document.getElementById('taskActualStart').value,
+                targetEnd: document.getElementById('taskTargetEnd').value,
+                actualEnd: document.getElementById('taskActualEnd').value,
+                deadline: document.getElementById('taskDeadline').value,
+                reviewer: document.getElementById('taskReviewer').value,
+                instruction: document.getElementById('taskInstruction').value,
+                detail: document.getElementById('taskDetail').value
+            };
+
+            if (editingTaskId !== null) {
+                const index = tasks.findIndex(t => t.id === editingTaskId);
+                tasks[index] = { ...tasks[index], ...taskData };
+            } else {
+                const newTask = {
+                    id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                    ...taskData
+                };
+                tasks.push(newTask);
+            }
+
+            saveTasks();
+            renderTasks();
+            updateStats();
+            closeModal();
+        }
+
+        // タスクを編集
+        function editTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            editingTaskId = id;
+            document.getElementById('modalTitle').textContent = 'タスク編集';
+            document.getElementById('taskName').value = task.name;
+            document.getElementById('taskStatus').value = task.status;
+            document.getElementById('taskPriority').value = task.priority;
+            document.getElementById('taskType').value = task.type;
+            document.getElementById('taskRequester').value = task.requester || '';
+            document.getElementById('taskTargetStart').value = task.targetStart || '';
+            document.getElementById('taskActualStart').value = task.actualStart || '';
+            document.getElementById('taskTargetEnd').value = task.targetEnd || '';
+            document.getElementById('taskActualEnd').value = task.actualEnd || '';
+            document.getElementById('taskDeadline').value = task.deadline || '';
+            document.getElementById('taskReviewer').value = task.reviewer || '';
+            document.getElementById('taskInstruction').value = task.instruction || '';
+            document.getElementById('taskDetail').value = task.detail || '';
+            document.getElementById('taskModal').classList.add('active');
+        }
+
+        // タスクを削除
+        function deleteTask(id) {
+            if (!confirm('このタスクを削除しますか?')) return;
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+            updateStats();
+        }
+
+        // 全削除
+        function clearAllTasks() {
+            if (!confirm('全てのタスクを削除しますか?\nこの操作は取り消せません。')) return;
+            tasks = [];
+            saveTasks();
+            renderTasks();
+            updateStats();
+        }
+
+        // フィルター
+        function filterTasks() {
+            renderTasks();
+        }
+
+        // Excel出力
+        function exportToExcel() {
+            if (tasks.length === 0) {
+                alert('タスクがありません');
+                return;
+            }
+
+            let csv = '\uFEFF';
+            csv += '#,ステータス,タスク名,緊急度,タイプ,依頼者,目標開始,実際開始,開始差異(分),目標終了,実際完了,完了差異(分),所要時間,デッドライン,レビュー依頼先,指示内容,詳細\n';
+            
+            tasks.forEach(task => {
+                const startDiff = calculateTimeDifference(task.targetStart, task.actualStart);
+                const endDiff = calculateTimeDifference(task.targetEnd, task.actualEnd);
+                const workingTime = calculateWorkingTime(task.actualStart, task.actualEnd);
+                
+                csv += [
+                    task.id,
+                    task.status,
+                    `"${task.name}"`,
+                    task.priority,
+                    task.type,
+                    task.requester || '',
+                    task.targetStart || '',
+                    task.actualStart || '',
+                    startDiff !== null ? startDiff : '',
+                    task.targetEnd || '',
+                    task.actualEnd || '',
+                    endDiff !== null ? endDiff : '',
+                    workingTime,
+                    task.deadline || '',
+                    task.reviewer || '',
+                    `"${(task.instruction || '').replace(/"/g, '""')}"`,
+                    `"${(task.detail || '').replace(/"/g, '""')}"`
+                ].join(',') + '\n';
+            });
+
+            try {
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.download = `SESタスク管理_${timestamp}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                alert('CSVファイルをダウンロードしました！');
+            } catch (error) {
+                alert('ダウンロードに失敗しました: ' + error.message);
+            }
+        }
+
+        // 初期化
+        loadTasks();
+    </script>
+</body>
+</html>
