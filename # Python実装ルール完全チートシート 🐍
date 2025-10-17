@@ -1,0 +1,788 @@
+# Python実装ルール完全チートシート 🐍
+
+先輩の指示がバッチリ理解できる実践的なガイドです!
+
+## 📋 目次
+1. [インデント(字下げ)の絶対ルール](#インデント)
+2. [命名規則(スネークケース等)](#命名規則)
+3. [先輩がよく使う指示用語集](#指示用語)
+4. [コーディング規約(PEP 8)](#コーディング規約)
+5. [実践チェックリスト](#チェックリスト)
+
+---
+
+## 🔤 インデント(字下げ)の絶対ルール {#インデント}
+
+### 基本: スペース4つが鉄則
+
+```python
+# ✅ 正しい(スペース4つ)
+def hello():
+    print("Hello")
+    if True:
+        print("World")
+
+# ❌ 間違い(スペース2つ)
+def hello():
+  print("Hello")
+
+# ❌ 間違い(タブ)
+def hello():
+	print("Hello")
+
+# ❌ 間違い(混在)
+def hello():
+    print("Hello")
+	print("World")  # タブとスペースの混在はNG
+```
+
+### インデントが必要な場面
+
+```python
+# 1. 関数定義
+def function_name():
+    # ← ここは4スペース
+    pass
+
+# 2. クラス定義
+class MyClass:
+    # ← ここは4スペース
+    pass
+
+# 3. if文
+if condition:
+    # ← ここは4スペース
+    do_something()
+
+# 4. for文
+for item in items:
+    # ← ここは4スペース
+    process(item)
+
+# 5. while文
+while condition:
+    # ← ここは4スペース
+    do_something()
+
+# 6. try-except
+try:
+    # ← ここは4スペース
+    risky_operation()
+except Exception:
+    # ← ここは4スペース
+    handle_error()
+
+# 7. with文
+with open('file.txt') as f:
+    # ← ここは4スペース
+    content = f.read()
+```
+
+### ネストしたインデント
+
+```python
+# ネスト(入れ子)は4スペースずつ増やす
+class User:                           # インデントなし
+    def __init__(self, name):         # 4スペース
+        self.name = name              # 8スペース
+        if name:                      # 8スペース
+            for char in name:         # 12スペース
+                if char.isupper():    # 16スペース
+                    print(char)       # 20スペース
+```
+
+---
+
+## 🏷️ 命名規則(スネークケース等) {#命名規則}
+
+### Python命名規則一覧表
+
+| 対象 | 規則 | 例 |
+|------|------|-----|
+| 変数 | snake_case | `user_name`, `total_price` |
+| 関数 | snake_case | `calculate_tax()`, `get_user()` |
+| クラス | PascalCase (UpperCamelCase) | `UserAccount`, `ShoppingCart` |
+| 定数 | UPPER_SNAKE_CASE | `MAX_SIZE`, `API_KEY` |
+| プライベート変数 | _snake_case | `_internal_value` |
+| 特殊メソッド | __name__ | `__init__`, `__str__` |
+| モジュール | snake_case | `user_service.py` |
+| パッケージ | lowercase | `mypackage` |
+
+### 実例で覚える
+
+```python
+# 定数(UPPER_SNAKE_CASE)
+MAX_RETRY_COUNT = 3
+DATABASE_URL = "postgresql://localhost/mydb"
+API_TIMEOUT_SECONDS = 30
+
+# クラス(PascalCase)
+class UserAccount:
+    """ユーザーアカウントクラス"""
+    pass
+
+class ShoppingCart:
+    """ショッピングカートクラス"""
+    pass
+
+class OrderProcessor:
+    """注文処理クラス"""
+    pass
+
+# 関数・メソッド(snake_case)
+def calculate_total_price(items):
+    """合計金額を計算"""
+    pass
+
+def get_user_by_id(user_id):
+    """IDでユーザーを取得"""
+    pass
+
+def send_notification_email(user, message):
+    """通知メールを送信"""
+    pass
+
+# 変数(snake_case)
+user_name = "田中太郎"
+total_amount = 15000
+is_active = True
+created_at = datetime.now()
+
+# プライベート変数・メソッド(先頭にアンダースコア)
+class BankAccount:
+    def __init__(self):
+        self._balance = 0  # プライベート変数
+    
+    def _validate_amount(self, amount):  # プライベートメソッド
+        return amount > 0
+
+# 特殊メソッド(前後に2つのアンダースコア)
+class Product:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+    
+    def __str__(self):
+        return f"{self.name}: {self.price}円"
+    
+    def __repr__(self):
+        return f"Product('{self.name}', {self.price})"
+```
+
+### ❌ よくある命名の間違い
+
+```python
+# ❌ 悪い例
+def CalculateTotal():  # 関数はPascalCaseにしない
+    pass
+
+class user_account:  # クラスはsnake_caseにしない
+    pass
+
+MAX_SIZE = 100  # これはOK
+max_size = 100  # 定数なのにsnake_caseはNG
+
+userName = "太郎"  # camelCaseは使わない(JavaScript風)
+
+# ✅ 良い例
+def calculate_total():
+    pass
+
+class UserAccount:
+    pass
+
+MAX_SIZE = 100
+user_name = "太郎"
+```
+
+---
+
+## 💬 先輩がよく使う指示用語集 {#指示用語}
+
+### コーディング指示用語
+
+#### **「リファクタリングして」**
+意味: コードの動作を変えずに、読みやすく・保守しやすく書き直すこと
+
+```python
+# Before: リファクタリング前
+def calc(x, y, z):
+    if z == 1:
+        return x + y
+    elif z == 2:
+        return x - y
+    else:
+        return x * y
+
+# After: リファクタリング後
+def add(x: int, y: int) -> int:
+    """2つの数を足す"""
+    return x + y
+
+def subtract(x: int, y: int) -> int:
+    """2つの数を引く"""
+    return x - y
+
+def multiply(x: int, y: int) -> int:
+    """2つの数を掛ける"""
+    return x * y
+```
+
+#### **「DRYにして」**
+意味: Don't Repeat Yourself(同じコードを繰り返さない)
+
+```python
+# ❌ DRYじゃない
+user1_name = user1_data.get('name')
+user1_age = user1_data.get('age')
+user2_name = user2_data.get('name')
+user2_age = user2_data.get('age')
+user3_name = user3_data.get('name')
+user3_age = user3_data.get('age')
+
+# ✅ DRY
+def extract_user_info(user_data):
+    return {
+        'name': user_data.get('name'),
+        'age': user_data.get('age')
+    }
+
+users_info = [extract_user_info(data) for data in [user1_data, user2_data, user3_data]]
+```
+
+#### **「ハードコードしないで」**
+意味: 値を直接コードに書き込まず、変数や設定ファイルで管理する
+
+```python
+# ❌ ハードコード
+def send_email(user):
+    smtp_server = "smtp.gmail.com"  # 直接書いている
+    port = 587
+    password = "mypassword123"  # これは特に危険!
+    # ...
+
+# ✅ 設定で管理
+from config import EMAIL_CONFIG
+
+def send_email(user):
+    smtp_server = EMAIL_CONFIG['server']
+    port = EMAIL_CONFIG['port']
+    password = os.getenv('EMAIL_PASSWORD')  # 環境変数から
+    # ...
+```
+
+#### **「マジックナンバーを定数化して」**
+意味: 意味不明な数値を、名前付き定数にする
+
+```python
+# ❌ マジックナンバー
+def calculate_price(base_price):
+    return base_price * 1.1  # 1.1って何?
+
+# ✅ 定数化
+TAX_RATE = 1.1  # 消費税率10%
+
+def calculate_price(base_price):
+    return base_price * TAX_RATE
+```
+
+#### **「早期リターンして」**
+意味: 条件に合わない場合は早めに関数から抜ける
+
+```python
+# ❌ ネストが深い
+def process_user(user):
+    if user is not None:
+        if user.is_active:
+            if user.has_permission:
+                # 実際の処理
+                return result
+
+# ✅ 早期リターン
+def process_user(user):
+    if user is None:
+        return None
+    if not user.is_active:
+        return None
+    if not user.has_permission:
+        return None
+    
+    # 実際の処理
+    return result
+```
+
+#### **「型ヒントつけて」**
+意味: 関数の引数と戻り値の型を明示する
+
+```python
+# ❌ 型ヒントなし
+def calculate_total(items):
+    return sum(items)
+
+# ✅ 型ヒントあり
+from typing import List
+
+def calculate_total(items: List[int]) -> int:
+    """合計を計算する"""
+    return sum(items)
+```
+
+#### **「docstring書いて」**
+意味: 関数やクラスの説明を三連クォートで書く
+
+```python
+# ❌ docstringなし
+def calculate_discount(price, rate):
+    return price * (1 - rate)
+
+# ✅ docstringあり
+def calculate_discount(price: float, rate: float) -> float:
+    """
+    割引後の価格を計算する
+    
+    Args:
+        price: 元の価格
+        rate: 割引率(0.0〜1.0)
+    
+    Returns:
+        割引後の価格
+    
+    Examples:
+        >>> calculate_discount(1000, 0.2)
+        800.0
+    """
+    return price * (1 - rate)
+```
+
+### 設計・アーキテクチャ用語
+
+#### **「疎結合にして」**
+意味: クラスや関数の依存関係を減らす
+
+```python
+# ❌ 密結合
+class OrderProcessor:
+    def __init__(self):
+        self.db = MySQLDatabase()  # 特定のDBに依存
+    
+    def process(self, order):
+        self.db.save(order)
+
+# ✅ 疎結合
+class OrderProcessor:
+    def __init__(self, database):  # どんなDBでもOK
+        self.database = database
+    
+    def process(self, order):
+        self.database.save(order)
+```
+
+#### **「依存性注入(DI)して」**
+意味: 必要なものを外から渡す
+
+```python
+# ❌ 内部で生成
+class UserService:
+    def __init__(self):
+        self.db = Database()  # 内部で作成
+        self.cache = RedisCache()  # 内部で作成
+
+# ✅ 依存性注入
+class UserService:
+    def __init__(self, db, cache):  # 外から受け取る
+        self.db = db
+        self.cache = cache
+
+# 使用例
+db = Database()
+cache = RedisCache()
+service = UserService(db, cache)
+```
+
+#### **「単一責任にして」**
+意味: 1つのクラス/関数は1つのことだけをする
+
+```python
+# ❌ 複数の責任
+class User:
+    def __init__(self, name):
+        self.name = name
+    
+    def save_to_database(self):  # DB保存
+        pass
+    
+    def send_email(self):  # メール送信
+        pass
+    
+    def generate_report(self):  # レポート生成
+        pass
+
+# ✅ 単一責任
+class User:
+    def __init__(self, name):
+        self.name = name
+
+class UserRepository:
+    def save(self, user):
+        pass
+
+class EmailService:
+    def send(self, user):
+        pass
+
+class ReportGenerator:
+    def generate(self, user):
+        pass
+```
+
+### Git・バージョン管理用語
+
+#### **「コミットメッセージちゃんと書いて」**
+
+```bash
+# ❌ 悪い例
+git commit -m "修正"
+git commit -m "update"
+git commit -m "bugs"
+
+# ✅ 良い例
+git commit -m "feat: ユーザー登録機能を追加"
+git commit -m "fix: ログイン時のバリデーションエラーを修正"
+git commit -m "refactor: calculate_total関数を分割"
+```
+
+**コミットメッセージの接頭辞:**
+- `feat:` 新機能
+- `fix:` バグ修正
+- `refactor:` リファクタリング
+- `docs:` ドキュメント更新
+- `test:` テスト追加
+- `style:` フォーマット変更
+
+---
+
+## 📏 コーディング規約(PEP 8) {#コーディング規約}
+
+### 行の長さ
+
+```python
+# 1行は79文字以内(最大88文字)
+
+# ❌ 長すぎる
+result = some_function(argument1, argument2, argument3, argument4, argument5, argument6, argument7)
+
+# ✅ 改行して読みやすく
+result = some_function(
+    argument1,
+    argument2,
+    argument3,
+    argument4,
+    argument5
+)
+```
+
+### 空白行のルール
+
+```python
+# クラス定義の前後は2行空ける
+
+
+class FirstClass:
+    pass
+
+
+class SecondClass:
+    pass
+
+
+# 関数定義の前後は2行空ける
+def first_function():
+    pass
+
+
+def second_function():
+    pass
+
+
+# クラス内のメソッド間は1行空ける
+class MyClass:
+    def method1(self):
+        pass
+    
+    def method2(self):
+        pass
+```
+
+### スペースの使い方
+
+```python
+# ✅ 正しいスペースの使い方
+
+# 演算子の前後にスペース
+x = 1 + 2
+result = x * y
+
+# カンマの後にスペース
+items = [1, 2, 3, 4]
+user = {"name": "太郎", "age": 25}
+
+# 関数呼び出し(括弧の前にスペースなし)
+print("Hello")
+calculate(10, 20)
+
+# ❌ 間違ったスペース
+x=1+2  # 演算子の前後にスペースがない
+items = [1,2,3,4]  # カンマの後にスペースがない
+print ("Hello")  # 括弧の前にスペースがある
+```
+
+### インポートのルール
+
+```python
+# ✅ 正しいインポート順序
+
+# 1. 標準ライブラリ
+import os
+import sys
+from datetime import datetime
+
+# 2. サードパーティ
+import numpy as np
+import pandas as pd
+from flask import Flask
+
+# 3. 自作モジュール
+from myapp.models import User
+from myapp.utils import helper
+
+
+# ❌ 1行で複数インポート
+from os import path, sys  # これはNG
+
+# ✅ 別々の行で
+from os import path
+import sys
+```
+
+### 比較演算
+
+```python
+# ✅ 正しい比較
+
+# None との比較は is を使う
+if value is None:
+    pass
+
+if value is not None:
+    pass
+
+# 真偽値の比較
+if is_active:  # これでOK
+    pass
+
+# ❌ 間違った比較
+if value == None:  # これはNG
+    pass
+
+if is_active == True:  # 冗長
+    pass
+```
+
+---
+
+## ✅ 実践チェックリスト {#チェックリスト}
+
+### コードレビュー前チェック
+
+```python
+"""
+□ インデントは4スペースで統一されているか?
+□ 変数名・関数名はsnake_caseか?
+□ クラス名はPascalCaseか?
+□ 定数はUPPER_SNAKE_CASEか?
+□ 1行79文字以内か?
+□ 関数に型ヒントがあるか?
+□ docstringが書かれているか?
+□ マジックナンバーを使っていないか?
+□ 同じコードを繰り返していないか?(DRY)
+□ 適切に空白行が入っているか?
+□ インポートの順序は正しいか?
+□ コメントは必要十分か?
+□ 変数名から意味が理解できるか?
+"""
+```
+
+### コード品質チェックツール
+
+```python
+# ファイル: .flake8
+# コードスタイルチェック用設定
+
+# インストール
+# pip install flake8
+
+# 実行
+# flake8 your_file.py
+```
+
+```python
+# ファイル: setup.cfg
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude = .git,__pycache__,venv
+```
+
+---
+
+## 🎯 実践例: 完璧なPythonコード
+
+```python
+"""
+ユーザー管理モジュール
+
+このモジュールはユーザーの登録・認証機能を提供します。
+"""
+from typing import Optional
+from datetime import datetime
+
+
+# 定数定義
+MAX_LOGIN_ATTEMPTS = 3
+PASSWORD_MIN_LENGTH = 8
+
+
+class UserNotFoundError(Exception):
+    """ユーザーが見つからない場合のエラー"""
+    pass
+
+
+class User:
+    """
+    ユーザークラス
+    
+    Attributes:
+        user_id: ユーザーID
+        username: ユーザー名
+        email: メールアドレス
+        created_at: 作成日時
+    """
+    
+    def __init__(self, user_id: int, username: str, email: str):
+        self.user_id = user_id
+        self.username = username
+        self.email = email
+        self.created_at = datetime.now()
+        self._login_attempts = 0
+    
+    def __str__(self) -> str:
+        return f"User({self.username}, {self.email})"
+    
+    def __repr__(self) -> str:
+        return f"User(id={self.user_id}, username='{self.username}')"
+    
+    def is_locked(self) -> bool:
+        """アカウントがロックされているか確認"""
+        return self._login_attempts >= MAX_LOGIN_ATTEMPTS
+    
+    def reset_login_attempts(self) -> None:
+        """ログイン試行回数をリセット"""
+        self._login_attempts = 0
+
+
+class UserRepository:
+    """ユーザーデータの永続化を担当"""
+    
+    def __init__(self, database):
+        self.database = database
+    
+    def find_by_id(self, user_id: int) -> Optional[User]:
+        """
+        IDでユーザーを検索
+        
+        Args:
+            user_id: 検索するユーザーID
+        
+        Returns:
+            見つかったユーザー、見つからない場合はNone
+        """
+        # データベース検索処理
+        pass
+    
+    def save(self, user: User) -> bool:
+        """
+        ユーザーを保存
+        
+        Args:
+            user: 保存するユーザーオブジェクト
+        
+        Returns:
+            保存に成功したらTrue
+        """
+        # データベース保存処理
+        pass
+
+
+def validate_password(password: str) -> bool:
+    """
+    パスワードの妥当性をチェック
+    
+    Args:
+        password: チェックするパスワード
+    
+    Returns:
+        妥当ならTrue、そうでなければFalse
+    """
+    if len(password) < PASSWORD_MIN_LENGTH:
+        return False
+    
+    has_uppercase = any(c.isupper() for c in password)
+    has_lowercase = any(c.islower() for c in password)
+    has_digit = any(c.isdigit() for c in password)
+    
+    return has_uppercase and has_lowercase and has_digit
+
+
+def create_user(username: str, email: str, password: str) -> Optional[User]:
+    """
+    新規ユーザーを作成
+    
+    Args:
+        username: ユーザー名
+        email: メールアドレス
+        password: パスワード
+    
+    Returns:
+        作成されたユーザー、失敗時はNone
+    """
+    if not validate_password(password):
+        return None
+    
+    # ユーザー作成処理
+    pass
+```
+
+---
+
+## 🚀 すぐ使える用語返答集
+
+先輩「これリファクタリングしといて」
+→ **「かしこまりました。コードを整理して読みやすくします」**
+
+先輩「DRYにして」
+→ **「同じコードを関数にまとめます」**
+
+先輩「型ヒントつけて」
+→ **「引数と戻り値の型を明示します」**
+
+先輩「早期リターンで」
+→ **「条件チェックを先にして、ネストを減らします」**
+
+先輩「定数化して」
+→ **「マジックナンバーを UPPER_SNAKE_CASE の定数にします」**
+
+---
+
+**これで先輩の指示もバッチリ!** 💪
+
+わからない用語が出てきたら、このチートシートで確認しましょう!
